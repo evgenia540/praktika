@@ -1,10 +1,160 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity4">
+    android:orientation="vertical"
+    android:background="@android:color/white"
+    android:padding="20dp">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Создание профиля"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="#000000" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Без профиля вы не сможете создавать проекты. В профиле будут храниться результаты проектов и ваши описания."
+        android:textSize="12sp"
+        android:textColor="#666666"
+        android:lineSpacingExtra="2dp" />
+
+    <!-- Имя -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Имя"
+        android:textSize="13sp"
+        android:textColor="#333333"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etFirstName"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:hint="Введите имя"
+        android:background="@drawable/edit_text_bg"
+        android:paddingHorizontal="14dp"
+        android:textSize="14sp" />
+
+    <!-- Отчество -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Отчество"
+        android:textSize="13sp"
+        android:textColor="#333333"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etPatronymic"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:hint="Введите отчество"
+        android:background="@drawable/edit_text_bg"
+        android:paddingHorizontal="14dp"
+        android:textSize="14sp" />
+
+    <!-- Фамилия -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Фамилия"
+        android:textSize="13sp"
+        android:textColor="#333333"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etLastName"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:hint="Введите фамилию"
+        android:background="@drawable/edit_text_bg"
+        android:paddingHorizontal="14dp"
+        android:textSize="14sp" />
+
+    <!-- Дата рождения -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Дата рождения"
+        android:textSize="13sp"
+        android:textColor="#333333"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etBirthDate"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:hint="ДД.ММ.ГГГГ"
+        android:background="@drawable/edit_text_bg"
+        android:paddingHorizontal="14dp"
+        android:textSize="14sp"
+        android:inputType="date" />
+
+    <!-- Пол со стрелочкой -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Пол"
+        android:textSize="13sp"
+        android:textColor="#333333"
+        android:textStyle="bold" />
+
+    <Spinner
+        android:id="@+id/spinnerGender"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:paddingHorizontal="14dp"
+         />
+
+    <!-- Почта -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Почта"
+        android:textSize="13sp"
+        android:textColor="#333333"
+        android:textStyle="bold" />
+
+    <EditText
+        android:id="@+id/etEmail"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginTop="4dp"
+        android:hint="example@mail.com"
+        android:background="@drawable/edit_text_bg"
+        android:paddingHorizontal="14dp"
+        android:textSize="14sp"
+        android:inputType="textEmailAddress" />
+
+    <!-- Кнопка Далее -->
+    <Button
+        android:id="@+id/btnNext"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="20dp"
+        android:text="Далее"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#2D7AFF"
+        android:gravity="center" />
+
+</LinearLayout>

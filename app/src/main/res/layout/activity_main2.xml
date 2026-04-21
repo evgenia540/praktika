@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
@@ -173,9 +174,11 @@
             android:textColor="#1A1A1A"
             android:textSize="14sp"
             app:cornerRadius="12dp"
+            app:icon="@drawable/vk"
             app:layout_constraintTop_toBottomOf="@id/tvOr"
             app:strokeColor="#E0E0E0"
-            app:strokeWidth="1dp" />
+            app:strokeWidth="1dp"
+            tools:layout_editor_absoluteX="24dp" />
 
         <!-- Кнопка Yandex -->
         <Button

@@ -9,7 +9,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity2 extends AppCompatActivity {
@@ -23,7 +23,7 @@ public class MainActivity2 extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
 
-        TextView tvBottomHint = findViewById(R.id.tvBottomHint);
+        TextView tvBottomHint = findViewById(R.id.tvOr);
         tvBottomHint.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity2.this, MainActivity3.class);
             startActivity(intent);
@@ -66,9 +66,10 @@ public class MainActivity2 extends AppCompatActivity {
 
         // Зарегистрироваться
         tvRegister.setOnClickListener(v -> {
-            Toast.makeText(this, "Переход на регистрацию", Toast.LENGTH_SHORT).show();
+            // Переход на экран создания профиля
+            Intent intent = new Intent(MainActivity2.this, MainActivity4.class);
+            startActivity(intent);
         });
-
         // Социальные кнопки
         btnVk.setOnClickListener(v -> Toast.makeText(this, "Вход через VK", Toast.LENGTH_SHORT).show());
         btnYandex.setOnClickListener(v -> Toast.makeText(this, "Вход через Yandex", Toast.LENGTH_SHORT).show());
