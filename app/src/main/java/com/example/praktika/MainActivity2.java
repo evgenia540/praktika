@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity2 extends AppCompatActivity {
 
@@ -22,13 +21,6 @@ public class MainActivity2 extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main2);
-
-        TextView tvBottomHint = findViewById(R.id.tvOr);
-        tvBottomHint.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity2.this, MainActivity3.class);
-            startActivity(intent);
-        });
-
 
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
@@ -56,9 +48,17 @@ public class MainActivity2 extends AppCompatActivity {
         btnNext.setOnClickListener(v -> {
             String email = etEmail.getText().toString().trim();
             String password = etPassword.getText().toString().trim();
+
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Заполните все поля", Toast.LENGTH_SHORT).show();
             } else {
+                // Сохраняем email
+                getSharedPreferences("user_data", MODE_PRIVATE)
+                        .edit()
+                        .putString("user_email", email)
+                        .apply();
+
+                // Переход на экран ввода PIN-кода
                 Intent intent = new Intent(MainActivity2.this, MainActivity3.class);
                 startActivity(intent);
             }
@@ -66,10 +66,10 @@ public class MainActivity2 extends AppCompatActivity {
 
         // Зарегистрироваться
         tvRegister.setOnClickListener(v -> {
-            // Переход на экран создания профиля
             Intent intent = new Intent(MainActivity2.this, MainActivity4.class);
             startActivity(intent);
         });
+
         // Социальные кнопки
         btnVk.setOnClickListener(v -> Toast.makeText(this, "Вход через VK", Toast.LENGTH_SHORT).show());
         btnYandex.setOnClickListener(v -> Toast.makeText(this, "Вход через Yandex", Toast.LENGTH_SHORT).show());

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="gender_array">
+        <item>Мужской</item>
+        <item>Женский</item>
+    </string-array>
+
+    <string-array name="project_type_array">
+        <item>Выберите тип</item>
+        <item>Личный</item>
+        <item>Рабочий</item>
+        <item>Учебный</item>
+    </string-array>
+
+    <string-array name="project_for_array">
+        <item>Выберите кому</item>
+        <item>Себе</item>
+        <item>Коллеге</item>
+        <item>Другу</item>
+    </string-array>
+
+    <string-array name="project_category_array">
+        <item>Выберите категорию</item>
+        <item>Дизайн</item>
+        <item>Разработка</item>
+        <item>Маркетинг</item>
+    </string-array>
+</resources>

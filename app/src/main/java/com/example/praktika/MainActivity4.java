@@ -28,7 +28,7 @@ public class MainActivity4 extends AppCompatActivity {
         spinnerGender = findViewById(R.id.spinnerGender);
         btnNext = findViewById(R.id.btnNext);
 
-        // Настройка Spinner для выбора пола
+        // Настройка Spinner
         String[] genders = {"Мужской", "Женский"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, genders);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -40,7 +40,6 @@ public class MainActivity4 extends AppCompatActivity {
             String lastName = etLastName.getText().toString().trim();
             String birthDate = etBirthDate.getText().toString().trim();
             String email = etEmail.getText().toString().trim();
-            String gender = spinnerGender.getSelectedItem().toString();
 
             if (firstName.isEmpty()) {
                 Toast.makeText(this, "Введите имя", Toast.LENGTH_SHORT).show();
@@ -59,8 +58,16 @@ public class MainActivity4 extends AppCompatActivity {
                 return;
             }
 
+            // Сохраняем данные пользователя
+            getSharedPreferences("user_data", MODE_PRIVATE)
+                    .edit()
+                    .putString("user_name", firstName + " " + lastName)
+                    .putString("user_email", email)
+                    .putString("user_birth_date", birthDate)
+                    .putString("user_gender", spinnerGender.getSelectedItem().toString())
+                    .apply();
+
             Toast.makeText(this, "Профиль создан!", Toast.LENGTH_SHORT).show();
-            // Переход на следующий экран (создание пароля)
             Intent intent = new Intent(MainActivity4.this, MainActivity5.class);
             startActivity(intent);
         });

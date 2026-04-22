@@ -1,57 +1,76 @@
 package com.example.praktika;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
 public class MainActivity3 extends AppCompatActivity {
 
     private StringBuilder pinCode = new StringBuilder();
-    private final String CORRECT_PIN = "1234"; // Теперь 4 цифры
+    private String correctPin = "1234"; // PIN по умолчанию
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main3);
 
-        findViewById(R.id.btn1).setOnClickListener(v -> addDigit(1));
-        findViewById(R.id.btn2).setOnClickListener(v -> addDigit(2));
-        findViewById(R.id.btn3).setOnClickListener(v -> addDigit(3));
-        findViewById(R.id.btn4).setOnClickListener(v -> addDigit(4));
-        findViewById(R.id.btn5).setOnClickListener(v -> addDigit(5));
-        findViewById(R.id.btn6).setOnClickListener(v -> addDigit(6));
-        findViewById(R.id.btn7).setOnClickListener(v -> addDigit(7));
-        findViewById(R.id.btn8).setOnClickListener(v -> addDigit(8));
-        findViewById(R.id.btn9).setOnClickListener(v -> addDigit(9));
-        findViewById(R.id.btn0).setOnClickListener(v -> addDigit(0));
+        // Получаем сохраненный PIN из SharedPreferences
+        SharedPreferences prefs = getSharedPreferences("user_data", MODE_PRIVATE);
+        String savedPin = prefs.getString("user_pin", null);
+        if (savedPin != null && !savedPin.isEmpty()) {
+            correctPin = savedPin;
+        }
 
-        // Кнопка удаления
-        Button btnDelete = findViewById(R.id.btnDelete);
+        // Настройка кнопок
+        setupButton(R.id.btn1, 1);
+        setupButton(R.id.btn2, 2);
+        setupButton(R.id.btn3, 3);
+        setupButton(R.id.btn4, 4);
+        setupButton(R.id.btn5, 5);
+        setupButton(R.id.btn6, 6);
+        setupButton(R.id.btn7, 7);
+        setupButton(R.id.btn8, 8);
+        setupButton(R.id.btn9, 9);
+        setupButton(R.id.btn0, 0);
+
+        CardView btnDelete = findViewById(R.id.btnDelete);
         btnDelete.setOnClickListener(v -> deleteDigit());
     }
 
+    private void setupButton(int id, int digit) {
+        CardView button = findViewById(id);
+        button.setOnClickListener(v -> addDigit(digit));
+    }
+
     private void addDigit(int digit) {
-        if (pinCode.length() < 4) { // Теперь 4 цифры
+        if (pinCode.length() < 4) {
             pinCode.append(digit);
             updateDots();
 
             if (pinCode.length() == 4) {
-                if (pinCode.toString().equals(CORRECT_PIN)) {
-                    Toast.makeText(this, "Добро пожаловать!", Toast.LENGTH_SHORT).show();
-                    // Переход на главный экран
-                    Intent intent = new Intent(MainActivity3.this, MainActivity7.class);
-                    startActivity(intent);
-                    finish();
-                    pinCode.setLength(0);
-                } else {
-                    Toast.makeText(this, "Неверный код", Toast.LENGTH_SHORT).show();
-                    pinCode.setLength(0);
-                    updateDots();
-                }
+                checkPinCode();
             }
+        }
+    }
+
+    private void checkPinCode() {
+        String enteredPin = pinCode.toString();
+        if (enteredPin.equals(correctPin)) {
+            Toast.makeText(this, "Добро пожаловать!", Toast.LENGTH_SHORT).show();
+
+            // Переход на HomeActivity
+            Intent intent = new Intent(MainActivity3.this, HomeActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        } else {
+            Toast.makeText(this, "Неверный PIN-код", Toast.LENGTH_SHORT).show();
+            pinCode.setLength(0);
+            updateDots();
         }
     }
 
@@ -63,7 +82,7 @@ public class MainActivity3 extends AppCompatActivity {
     }
 
     private void updateDots() {
-        int[] dotIds = {R.id.dot1, R.id.dot2, R.id.dot3, R.id.dot4}; // Только 4 точки
+        int[] dotIds = {R.id.dot1, R.id.dot2, R.id.dot3, R.id.dot4};
         for (int i = 0; i < dotIds.length; i++) {
             View dot = findViewById(dotIds[i]);
             if (dot != null) {

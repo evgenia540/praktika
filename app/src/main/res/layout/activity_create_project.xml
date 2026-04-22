@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:paddingStart="14dp"
+    android:paddingEnd="14dp">
+
+    <ImageButton
+        android:id="@+id/btnBackCreateProject"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/ip_registartion_field"
+        android:padding="6dp"
+        android:src="@drawable/ic_arrow_back_24"
+        android:contentDescription="@string/back"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tvCreateProjectTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/create_project"
+        android:textColor="@color/catalog_text_primary"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/createProjectScroll"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="14dp"
+        app:layout_constraintBottom_toTopOf="@+id/btnConfirmProject"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvCreateProjectTitle">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/type"
+                android:textColor="@color/catalog_text_secondary"
+                android:textSize="14sp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/etProjectType"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/ip_registartion_field"
+                android:completionThreshold="1"
+                android:hint="Выберите тип"
+                android:inputType="none"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textColor="@color/catalog_text_primary"
+                android:textColorHint="@color/catalog_text_secondary"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/project_name"
+                android:textColor="@color/catalog_text_secondary"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/etProjectName"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/ip_registartion_field"
+                android:hint="Введите имя"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textColor="@color/catalog_text_primary"
+                android:textColorHint="@color/catalog_text_secondary"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/date_start"
+                android:textColor="@color/catalog_text_secondary"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/etProjectStartDate"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/ip_registartion_field"
+                android:hint="__.__.____"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textColor="@color/catalog_text_primary"
+                android:textColorHint="@color/catalog_text_secondary"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/date_end"
+                android:textColor="@color/catalog_text_secondary"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/etProjectEndDate"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/ip_registartion_field"
+                android:hint="__.__.____"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textColor="@color/catalog_text_primary"
+                android:textColorHint="@color/catalog_text_secondary"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/project_for"
+                android:textColor="@color/catalog_text_secondary"
+                android:textSize="14sp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/etProjectFor"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/ip_registartion_field"
+                android:completionThreshold="1"
+                android:hint="Выберите кому"
+                android:inputType="none"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textColor="@color/catalog_text_primary"
+                android:textColorHint="@color/catalog_text_secondary"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/source"
+                android:textColor="@color/catalog_text_secondary"
+                android:textSize="14sp" />
+
+            <EditText
+                android:id="@+id/etProjectSource"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/ip_registartion_field"
+                android:hint="example.com"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textColor="@color/catalog_text_primary"
+                android:textColorHint="@color/catalog_text_secondary"
+                android:textSize="14sp" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="@string/category"
+                android:textColor="@color/catalog_text_secondary"
+                android:textSize="14sp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/etProjectCategory"
+                android:layout_width="match_parent"
+                android:layout_height="46dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="12dp"
+                android:background="@drawable/ip_registartion_field"
+                android:completionThreshold="1"
+                android:hint="Выберите категорию"
+                android:inputType="none"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:textColor="@color/catalog_text_primary"
+                android:textColorHint="@color/catalog_text_secondary"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <Button
+        android:id="@+id/btnConfirmProject"
+        android:layout_width="0dp"
+        android:layout_height="54dp"
+        android:layout_marginBottom="12dp"
+        android:background="@drawable/bg_button_continue"
+        android:text="@string/confirm"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:backgroundTint="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
