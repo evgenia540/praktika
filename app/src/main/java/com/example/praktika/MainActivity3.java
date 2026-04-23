@@ -11,7 +11,7 @@ import androidx.cardview.widget.CardView;
 public class MainActivity3 extends AppCompatActivity {
 
     private StringBuilder pinCode = new StringBuilder();
-    private String correctPin = "1234";
+    private String correctPin = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -19,14 +19,17 @@ public class MainActivity3 extends AppCompatActivity {
         setContentView(R.layout.activity_main3);
 
         try {
-            // Получаем сохраненный PIN из SharedPreferences
             SharedPreferences prefs = getSharedPreferences("user_data", MODE_PRIVATE);
             String savedPin = prefs.getString("user_pin", null);
-            if (savedPin != null && !savedPin.isEmpty()) {
-                correctPin = savedPin;
+
+            // Если PIN не установлен, сразу идем в Home
+            if (savedPin == null || savedPin.isEmpty()) {
+                goToHome();
+                return;
             }
 
-            // Проверяем что все кнопки существуют
+            correctPin = savedPin;
+
             setupButton(R.id.btn1, 1);
             setupButton(R.id.btn2, 2);
             setupButton(R.id.btn3, 3);
@@ -44,8 +47,8 @@ public class MainActivity3 extends AppCompatActivity {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             Toast.makeText(this, "Ошибка: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-            // При ошибке сразу переходим в Home
             goToHome();
         }
     }

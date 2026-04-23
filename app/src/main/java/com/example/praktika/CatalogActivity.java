@@ -56,7 +56,6 @@ public class CatalogActivity extends AppCompatActivity {
         ivProfile.setOnClickListener(v ->
                 startActivity(new Intent(CatalogActivity.this, MainActivity7.class)));
 
-        // Загружаем товары с сервера
         loadProductsFromServer();
     }
 
@@ -120,8 +119,6 @@ public class CatalogActivity extends AppCompatActivity {
                     isLoading = false;
                     android.util.Log.e("CATALOG_DEBUG", "Ошибка загрузки: " + error);
                     tvEmptyProducts.setText("Ошибка загрузки: " + error);
-
-                    // Пробуем загрузить локальные товары как резерв
                     loadLocalProducts();
                 });
             }
@@ -131,19 +128,19 @@ public class CatalogActivity extends AppCompatActivity {
     private void loadLocalProducts() {
         productList.clear();
         productList.add(new Product("Рубашка Воскресенье", "300 ₽", 0,
-                "Классическая рубашка из 100% хлопка."));
+                "Классическая рубашка из 100% хлопка.", "Женская одежда", ""));
         productList.add(new Product("Шорты Вторник", "4000 ₽", 0,
-                "Удобные летние шорты."));
+                "Удобные летние шорты.", "Женская одежда", ""));
         productList.add(new Product("Футболка Пятница", "800 ₽", 0,
-                "Хлопковая футболка с принтом."));
+                "Хлопковая футболка с принтом.", "Женская одежда", ""));
         productList.add(new Product("Джинсы Суббота", "2500 ₽", 0,
-                "Стильные джинсы прямого кроя."));
+                "Стильные джинсы прямого кроя.", "Мужская одежда", ""));
         productList.add(new Product("Куртка Зима", "5000 ₽", 0,
-                "Теплая зимняя куртка."));
+                "Теплая зимняя куртка.", "Мужская одежда", ""));
         productList.add(new Product("Платье Весна", "3500 ₽", 0,
-                "Элегантное платье из легкой ткани."));
+                "Элегантное платье из легкой ткани.", "Женская одежда", ""));
         productList.add(new Product("Брюки Осень", "2800 ₽", 0,
-                "Классические брюки для офиса."));
+                "Классические брюки для офиса.", "Мужская одежда", ""));
 
         filteredList.clear();
         filteredList.addAll(productList);
@@ -218,6 +215,8 @@ public class CatalogActivity extends AppCompatActivity {
             }
         }
 
+        android.util.Log.d("CATALOG_DEBUG", "Всего: " + productList.size() + ", Отфильтровано: " + filteredList.size());
+
         if (filteredList.isEmpty()) {
             tvEmptyProducts.setVisibility(View.VISIBLE);
             tvEmptyProducts.setText("Товары не найдены");
@@ -237,15 +236,19 @@ public class CatalogActivity extends AppCompatActivity {
         return text.contains(currentQuery);
     }
 
+    // ФИЛЬТРАЦИЯ ПО КАТЕГОРИИ (typeCloses с сервера)
     private boolean matchesFilter(Product product) {
         if (currentFilter == FilterType.ALL) return true;
-        String name = product.getName().toLowerCase(Locale.getDefault());
+
+        String category = product.getCategory();
+        if (category == null || category.isEmpty()) return false;
+
+        android.util.Log.d("CATALOG_DEBUG", "Фильтр: " + currentFilter + ", Товар: " + product.getName() + ", Категория: " + category);
+
         if (currentFilter == FilterType.WOMEN) {
-            return name.contains("рубашка") || name.contains("футболка") ||
-                    name.contains("шорты") || name.contains("платье");
+            return category.contains("Женская");
         } else {
-            return name.contains("джинсы") || name.contains("куртка") ||
-                    name.contains("брюки");
+            return category.contains("Мужская");
         }
     }
 
@@ -283,7 +286,6 @@ public class CatalogActivity extends AppCompatActivity {
         }
     }
 
-    // Обновление каталога с сервера (можно вызвать при свайпе вниз)
     public void refreshCatalog() {
         loadProductsFromServer();
     }

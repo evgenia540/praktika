@@ -6,7 +6,6 @@
     android:orientation="vertical"
     android:background="@color/white">
 
-    <!-- Основной контент -->
     <androidx.core.widget.NestedScrollView
         android:id="@+id/homeScroll"
         android:layout_width="match_parent"
@@ -48,7 +47,7 @@
                     android:contentDescription="@string/search_hint" />
             </FrameLayout>
 
-            <!-- Акции и новости -->
+            <!-- Заголовок Акции и новости -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -58,6 +57,7 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
+            <!-- Горизонтальный скролл для баннеров -->
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -70,78 +70,108 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
 
+                    <!-- Баннер 1 -->
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/homePromoCardPrimary"
                         android:layout_width="280dp"
-                        android:layout_height="160dp"
+                        android:layout_height="200dp"
                         android:layout_marginEnd="12dp"
-                        app:cardBackgroundColor="@android:color/transparent"
                         app:cardCornerRadius="14dp"
-                        app:cardElevation="0dp">
+                        app:cardElevation="4dp">
 
-                        <LinearLayout
+                        <FrameLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/bg_promo_card_teal"
-                            android:gravity="bottom"
-                            android:orientation="vertical"
-                            android:padding="16dp">
+                            android:layout_height="match_parent">
 
-                            <TextView
+                            <ImageView
+                                android:id="@+id/homePromoImagePrimary"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@string/promo_best_price"
-                                android:textColor="@color/white"
-                                android:textSize="22sp"
-                                android:textStyle="bold" />
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/bg_promo_placeholder_teal" />
 
-                            <TextView
+                            <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="@string/promo_week_products"
-                                android:textColor="@color/white"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
+                                android:layout_height="match_parent"
+                                android:gravity="bottom"
+                                android:orientation="vertical"
+                                android:padding="16dp"
+                                android:background="#66000000">
+
+                                <TextView
+                                    android:id="@+id/homePromoTitlePrimary"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/promo_best_price"
+                                    android:textColor="@color/white"
+                                    android:textSize="22sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/homePromoSubtitlePrimary"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:text="@string/promo_week_products"
+                                    android:textColor="@color/white"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+                        </FrameLayout>
                     </com.google.android.material.card.MaterialCardView>
 
+                    <!-- Баннер 2 -->
                     <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/homePromoCardSecondary"
                         android:layout_width="280dp"
-                        android:layout_height="160dp"
-                        app:cardBackgroundColor="@android:color/transparent"
+                        android:layout_height="200dp"
                         app:cardCornerRadius="14dp"
-                        app:cardElevation="0dp">
+                        app:cardElevation="4dp">
 
-                        <LinearLayout
+                        <FrameLayout
                             android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="@drawable/bg_promo_card_blue"
-                            android:gravity="bottom"
-                            android:orientation="vertical"
-                            android:padding="16dp">
+                            android:layout_height="match_parent">
 
-                            <TextView
+                            <ImageView
+                                android:id="@+id/homePromoImageSecondary"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="@string/promo_new_items"
-                                android:textColor="@color/white"
-                                android:textSize="22sp"
-                                android:textStyle="bold" />
+                                android:layout_height="match_parent"
+                                android:scaleType="centerCrop"
+                                android:src="@drawable/bg_promo_placeholder_blue" />
 
-                            <TextView
+                            <LinearLayout
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="8dp"
-                                android:text="@string/promo_catalog_update"
-                                android:textColor="@color/white"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
+                                android:layout_height="match_parent"
+                                android:gravity="bottom"
+                                android:orientation="vertical"
+                                android:padding="16dp"
+                                android:background="#66000000">
+
+                                <TextView
+                                    android:id="@+id/homePromoTitleSecondary"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="@string/promo_new_items"
+                                    android:textColor="@color/white"
+                                    android:textSize="22sp"
+                                    android:textStyle="bold" />
+
+                                <TextView
+                                    android:id="@+id/homePromoSubtitleSecondary"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="8dp"
+                                    android:text="@string/promo_catalog_update"
+                                    android:textColor="@color/white"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold" />
+                            </LinearLayout>
+                        </FrameLayout>
                     </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
             </HorizontalScrollView>
 
-            <!-- Каталог описаний -->
+            <!-- Заголовок Каталог -->
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -199,6 +229,7 @@
                     app:backgroundTint="@null" />
             </LinearLayout>
 
+            <!-- Пустое состояние -->
             <TextView
                 android:id="@+id/homeTvEmptyProducts"
                 android:layout_width="match_parent"
@@ -210,6 +241,7 @@
                 android:textSize="16sp"
                 android:visibility="gone" />
 
+            <!-- Список товаров -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvProducts"
                 android:layout_width="match_parent"

@@ -2,6 +2,12 @@ package com.example.praktika;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.TextUtils;
+import android.widget.ImageView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -26,6 +32,7 @@ public class ApiClient {
             .writeTimeout(30, TimeUnit.SECONDS)
             .build();
     private static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
+    private static final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     private static String authToken = null;
     private static String currentUserId = null;
@@ -35,10 +42,6 @@ public class ApiClient {
 
     public static void login(String email, String password, LoginCallback callback) {
         String json = "{\"identity\":\"" + escapeJson(email) + "\",\"password\":\"" + escapeJson(password) + "\"}";
-
-        android.util.Log.d("API_DEBUG", "========== LOGIN REQUEST ==========");
-        android.util.Log.d("API_DEBUG", "URL: " + API_BASE + "/collections/users/auth-with-password");
-        android.util.Log.d("API_DEBUG", "Body: " + json);
 
         RequestBody body = RequestBody.create(json, JSON);
         Request request = new Request.Builder()
@@ -50,56 +53,36 @@ public class ApiClient {
         client.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
-                android.util.Log.e("API_DEBUG", "Login network error: " + e.getMessage());
                 callback.onFailure("Ошибка сети: " + e.getMessage());
             }
 
             @Override
             public void onResponse(okhttp3.Call call, Response response) throws IOException {
                 String responseData = response.body() != null ? response.body().string() : "";
-                android.util.Log.d("API_DEBUG", "Login response code: " + response.code());
-                android.util.Log.d("API_DEBUG", "Login response body: " + responseData);
 
                 if (response.isSuccessful()) {
                     try {
                         JSONObject jsonResp = new JSONObject(responseData);
+                        String token = jsonResp.getString("token");
+                        String userId = null;
+                        String userEmail = null;
 
-                        if (jsonResp.has("token")) {
-                            String token = jsonResp.getString("token");
-                            String userId = null;
-                            String userEmail = null;
-
-                            if (jsonResp.has("record")) {
-                                JSONObject record = jsonResp.getJSONObject("record");
-                                userId = record.getString("id");
-                                userEmail = record.getString("email");
-                            }
-
-                            authToken = token;
-                            currentUserId = userId;
-                            currentUserEmail = userEmail;
-
-                            android.util.Log.d("API_DEBUG", "Login SUCCESS! Token: " + token.substring(0, Math.min(20, token.length())) + "...");
-
-                            callback.onSuccess(token, userId, userEmail);
-                        } else {
-                            callback.onFailure("Ответ сервера не содержит токен");
+                        if (jsonResp.has("record")) {
+                            JSONObject record = jsonResp.getJSONObject("record");
+                            userId = record.getString("id");
+                            userEmail = record.getString("email");
                         }
+
+                        authToken = token;
+                        currentUserId = userId;
+                        currentUserEmail = userEmail;
+
+                        callback.onSuccess(token, userId, userEmail);
                     } catch (JSONException e) {
-                        android.util.Log.e("API_DEBUG", "JSON parse error: " + e.getMessage());
                         callback.onFailure("Ошибка парсинга ответа");
                     }
                 } else {
-                    String errorMsg = "Неверный email или пароль";
-                    try {
-                        JSONObject errorJson = new JSONObject(responseData);
-                        if (errorJson.has("message")) {
-                            errorMsg = errorJson.getString("message");
-                        }
-                    } catch (JSONException e) {
-                        // Игнорируем
-                    }
-                    callback.onFailure(errorMsg);
+                    callback.onFailure("Неверный email или пароль");
                 }
             }
         });
@@ -121,10 +104,6 @@ public class ApiClient {
                 "\"gender\":\"" + gender + "\"" +
                 "}";
 
-        android.util.Log.d("API_DEBUG", "========== REGISTER REQUEST ==========");
-        android.util.Log.d("API_DEBUG", "URL: " + API_BASE + "/collections/users/records");
-        android.util.Log.d("API_DEBUG", "Body: " + json);
-
         RequestBody body = RequestBody.create(json, JSON);
         Request request = new Request.Builder()
                 .url(API_BASE + "/collections/users/records")
@@ -135,36 +114,15 @@ public class ApiClient {
         client.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
-                android.util.Log.e("API_DEBUG", "Register network error: " + e.getMessage());
                 callback.onFailure("Ошибка сети: " + e.getMessage());
             }
 
             @Override
             public void onResponse(okhttp3.Call call, Response response) throws IOException {
-                String responseData = response.body() != null ? response.body().string() : "";
-                android.util.Log.d("API_DEBUG", "Register response code: " + response.code());
-                android.util.Log.d("API_DEBUG", "Register response body: " + responseData);
-
                 if (response.isSuccessful()) {
-                    android.util.Log.d("API_DEBUG", "Register SUCCESS!");
                     callback.onSuccess("Регистрация успешна");
                 } else {
-                    String errorMsg = "Ошибка регистрации";
-                    try {
-                        JSONObject errorJson = new JSONObject(responseData);
-                        if (errorJson.has("message")) {
-                            errorMsg = errorJson.getString("message");
-                        }
-                        if (errorJson.has("data")) {
-                            JSONObject data = errorJson.getJSONObject("data");
-                            if (data.has("email")) {
-                                errorMsg = "Пользователь с таким email уже существует";
-                            }
-                        }
-                    } catch (JSONException e) {
-                        // Игнорируем
-                    }
-                    callback.onFailure(errorMsg);
+                    callback.onFailure("Ошибка регистрации");
                 }
             }
         });
@@ -173,9 +131,6 @@ public class ApiClient {
     // ==================== ТОВАРЫ ====================
 
     public static void getProducts(ProductsCallback callback) {
-        android.util.Log.d("API_DEBUG", "========== GET PRODUCTS REQUEST ==========");
-        android.util.Log.d("API_DEBUG", "URL: " + API_BASE + "/collections/products/records");
-
         Request request = new Request.Builder()
                 .url(API_BASE + "/collections/products/records")
                 .get()
@@ -185,15 +140,12 @@ public class ApiClient {
         client.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
-                android.util.Log.e("API_DEBUG", "Get products network error: " + e.getMessage());
                 callback.onFailure("Ошибка сети: " + e.getMessage());
             }
 
             @Override
             public void onResponse(okhttp3.Call call, Response response) throws IOException {
                 String responseData = response.body() != null ? response.body().string() : "";
-                android.util.Log.d("API_DEBUG", "Get products response code: " + response.code());
-                android.util.Log.d("API_DEBUG", "Get products response body: " + responseData);
 
                 if (response.isSuccessful()) {
                     try {
@@ -201,82 +153,98 @@ public class ApiClient {
                         JSONArray items = jsonResp.getJSONArray("items");
                         List<Product> products = new ArrayList<>();
 
-                        android.util.Log.d("API_DEBUG", "Products count from server: " + items.length());
-
                         for (int i = 0; i < items.length(); i++) {
                             JSONObject item = items.getJSONObject(i);
-                            String name = item.getString("name");
+                            String name = item.getString("title");
                             double price = item.getDouble("price");
                             String description = item.optString("description", "");
+                            // ВАЖНО: поле typeCloses с сервера для фильтрации
+                            String category = item.optString("typeCloses", "");
 
-                            android.util.Log.d("API_DEBUG", "Product " + i + ": " + name + " - " + price + " ₽");
-
-                            Product product = new Product(name, String.format("%.0f", price) + " ₽", 0, description);
+                            String priceStr = String.format("%.0f", price) + " ₽";
+                            Product product = new Product(name, priceStr, 0, description, category, "");
                             products.add(product);
                         }
 
-                        if (products.isEmpty()) {
-                            android.util.Log.w("API_DEBUG", "No products found on server!");
-                            callback.onFailure("На сервере нет товаров");
-                        } else {
-                            android.util.Log.d("API_DEBUG", "Products loaded successfully: " + products.size());
-                            callback.onSuccess(products);
-                        }
+                        callback.onSuccess(products);
 
                     } catch (JSONException e) {
-                        android.util.Log.e("API_DEBUG", "JSON parse error: " + e.getMessage());
-                        callback.onFailure("Ошибка парсинга товаров: " + e.getMessage());
+                        callback.onFailure("Ошибка парсинга товаров");
                     }
                 } else {
-                    android.util.Log.e("API_DEBUG", "HTTP error: " + response.code());
                     callback.onFailure("Ошибка сервера: " + response.code());
                 }
             }
         });
     }
 
-    // ==================== ДОБАВЛЕНИЕ ТОВАРА (для админа) ====================
+    // ==================== АКЦИИ И НОВОСТИ (БАННЕРЫ) ====================
 
-    public static void addProduct(String name, double price, String description, String category, AddProductCallback callback) {
-        String json = "{" +
-                "\"name\":\"" + escapeJson(name) + "\"," +
-                "\"price\":" + price + "," +
-                "\"description\":\"" + escapeJson(description) + "\"," +
-                "\"category\":\"" + escapeJson(category) + "\"" +
-                "}";
+    public static void getPromotions(PromotionsCallback callback) {
+        String url = API_BASE + "/collections/promotions_and_news/records?sort=-created";
 
-        android.util.Log.d("API_DEBUG", "========== ADD PRODUCT REQUEST ==========");
-        android.util.Log.d("API_DEBUG", "URL: " + API_BASE + "/collections/products/records");
-        android.util.Log.d("API_DEBUG", "Body: " + json);
-
-        RequestBody body = RequestBody.create(json, JSON);
         Request request = new Request.Builder()
-                .url(API_BASE + "/collections/products/records")
-                .post(body)
+                .url(url)
+                .get()
                 .addHeader("Content-Type", "application/json")
-                .addHeader("Authorization", authToken != null ? authToken : "")
                 .build();
 
         client.newCall(request).enqueue(new okhttp3.Callback() {
             @Override
             public void onFailure(okhttp3.Call call, IOException e) {
-                android.util.Log.e("API_DEBUG", "Add product error: " + e.getMessage());
-                callback.onFailure(e.getMessage());
+                callback.onFailure("Ошибка сети: " + e.getMessage());
             }
 
             @Override
             public void onResponse(okhttp3.Call call, Response response) throws IOException {
                 String responseData = response.body() != null ? response.body().string() : "";
-                android.util.Log.d("API_DEBUG", "Add product response code: " + response.code());
-                android.util.Log.d("API_DEBUG", "Add product response body: " + responseData);
 
                 if (response.isSuccessful()) {
-                    callback.onSuccess("Товар добавлен");
+                    try {
+                        JSONObject jsonResp = new JSONObject(responseData);
+                        JSONArray items = jsonResp.getJSONArray("items");
+                        List<Promotion> promotions = new ArrayList<>();
+
+                        for (int i = 0; i < items.length(); i++) {
+                            JSONObject item = items.getJSONObject(i);
+                            String id = item.getString("id");
+                            String collectionId = item.getString("collectionId");
+                            String newsImage = item.optString("newsImage", "");
+
+                            String title;
+                            String description;
+                            if (i == 0) {
+                                title = "Лучшие цены";
+                                description = "Скидки до 50% на первую покупку";
+                            } else if (i == 1) {
+                                title = "Новинки";
+                                description = "Свежие поступления каждую неделю";
+                            } else {
+                                title = "Акция";
+                                description = "Успейте купить";
+                            }
+
+                            Promotion promotion = new Promotion(id, collectionId, title, description, newsImage);
+                            promotions.add(promotion);
+                        }
+
+                        callback.onSuccess(promotions);
+                    } catch (JSONException e) {
+                        callback.onFailure("Ошибка парсинга: " + e.getMessage());
+                    }
                 } else {
-                    callback.onFailure("Ошибка: " + response.code());
+                    callback.onFailure("Ошибка сервера: " + response.code());
                 }
             }
         });
+    }
+
+    public static String getPromotionImageUrl(Promotion promotion) {
+        if (promotion == null || TextUtils.isEmpty(promotion.getId()) ||
+                TextUtils.isEmpty(promotion.getImageName())) {
+            return null;
+        }
+        return API_BASE + "/collections/promotions_and_news/records/" + promotion.getId() + "/" + promotion.getImageName();
     }
 
     // ==================== ЗАКАЗЫ ====================
@@ -299,26 +267,49 @@ public class ApiClient {
             client.newCall(request).enqueue(new okhttp3.Callback() {
                 @Override
                 public void onFailure(okhttp3.Call call, IOException e) {
-                    android.util.Log.e("API_DEBUG", "Create order error: " + e.getMessage());
                     callback.onFailure(e.getMessage());
                 }
 
                 @Override
                 public void onResponse(okhttp3.Call call, Response response) throws IOException {
                     if (response.isSuccessful()) {
-                        android.util.Log.d("API_DEBUG", "Order created successfully");
                         callback.onSuccess("Заказ оформлен");
                     } else {
-                        android.util.Log.e("API_DEBUG", "Create order failed: " + response.code());
                         callback.onFailure("Ошибка: " + response.code());
                     }
                 }
             });
 
         } catch (JSONException e) {
-            android.util.Log.e("API_DEBUG", "JSON error: " + e.getMessage());
             callback.onFailure("Ошибка формирования заказа");
         }
+    }
+
+    public static void getOrders(String userId, OrdersCallback callback) {
+        String url = API_BASE + "/collections/orders/records?filter=(user_id='" + userId + "')";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", authToken != null ? authToken : "")
+                .build();
+
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, IOException e) {
+                callback.onFailure(e.getMessage());
+            }
+
+            @Override
+            public void onResponse(okhttp3.Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body() != null ? response.body().string() : "");
+                } else {
+                    callback.onFailure("Ошибка: " + response.code());
+                }
+            }
+        });
     }
 
     // ==================== ПРОЕКТЫ ====================
@@ -366,19 +357,38 @@ public class ApiClient {
         }
     }
 
+    public static void getProjects(String userId, ProjectsCallback callback) {
+        String url = API_BASE + "/collections/projects/records?filter=(user_id='" + userId + "')";
+
+        Request request = new Request.Builder()
+                .url(url)
+                .get()
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Authorization", authToken != null ? authToken : "")
+                .build();
+
+        client.newCall(request).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(okhttp3.Call call, IOException e) {
+                callback.onFailure(e.getMessage());
+            }
+
+            @Override
+            public void onResponse(okhttp3.Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    callback.onSuccess(response.body() != null ? response.body().string() : "");
+                } else {
+                    callback.onFailure("Ошибка: " + response.code());
+                }
+            }
+        });
+    }
+
     // ==================== ГЕТТЕРЫ ====================
 
-    public static String getAuthToken() {
-        return authToken;
-    }
-
-    public static String getCurrentUserId() {
-        return currentUserId;
-    }
-
-    public static String getCurrentUserEmail() {
-        return currentUserEmail;
-    }
+    public static String getAuthToken() { return authToken; }
+    public static String getCurrentUserId() { return currentUserId; }
+    public static String getCurrentUserEmail() { return currentUserEmail; }
 
     public static void setAuthData(String token, String userId, String email) {
         authToken = token;
@@ -410,6 +420,30 @@ public class ApiClient {
         return text.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n");
     }
 
+    // ==================== КЛАССЫ МОДЕЛЕЙ ====================
+
+    public static class Promotion {
+        private String id;
+        private String collectionId;
+        private String title;
+        private String description;
+        private String imageName;
+
+        public Promotion(String id, String collectionId, String title, String description, String imageName) {
+            this.id = id;
+            this.collectionId = collectionId;
+            this.title = title;
+            this.description = description;
+            this.imageName = imageName;
+        }
+
+        public String getId() { return id; }
+        public String getCollectionId() { return collectionId; }
+        public String getTitle() { return title; }
+        public String getDescription() { return description; }
+        public String getImageName() { return imageName; }
+    }
+
     // ==================== CALLBACK ИНТЕРФЕЙСЫ ====================
 
     public interface LoginCallback {
@@ -427,13 +461,23 @@ public class ApiClient {
         void onFailure(String error);
     }
 
-    public interface AddProductCallback {
-        void onSuccess(String message);
+    public interface PromotionsCallback {
+        void onSuccess(List<Promotion> promotions);
         void onFailure(String error);
     }
 
     public interface OrderCallback {
         void onSuccess(String orderId);
+        void onFailure(String error);
+    }
+
+    public interface OrdersCallback {
+        void onSuccess(String jsonResponse);
+        void onFailure(String error);
+    }
+
+    public interface ProjectsCallback {
+        void onSuccess(String jsonResponse);
         void onFailure(String error);
     }
 

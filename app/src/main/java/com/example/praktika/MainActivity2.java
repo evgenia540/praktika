@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
 
 public class MainActivity2 extends AppCompatActivity {
 
@@ -144,7 +143,6 @@ public class MainActivity2 extends AppCompatActivity {
         btnNext.setOnClickListener(v -> {
             String email = etEmail.getText().toString().trim();
             String password = etPassword.getText().toString();
-
             authenticateUser(email, password);
         });
     }
@@ -160,7 +158,15 @@ public class MainActivity2 extends AppCompatActivity {
                     saveAuthData(token, userId, email);
                     Toast.makeText(MainActivity2.this, "✅ Добро пожаловать!", Toast.LENGTH_SHORT).show();
 
-                    Intent intent = new Intent(MainActivity2.this, MainActivity3.class);
+                    SharedPreferences prefs = getSharedPreferences("user_data", MODE_PRIVATE);
+                    String hasPin = prefs.getString("user_pin", null);
+
+                    Intent intent;
+                    if (hasPin == null || hasPin.isEmpty()) {
+                        intent = new Intent(MainActivity2.this, HomeActivity.class);
+                    } else {
+                        intent = new Intent(MainActivity2.this, MainActivity3.class);
+                    }
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
