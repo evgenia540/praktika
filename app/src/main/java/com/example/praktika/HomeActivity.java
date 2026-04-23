@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -28,39 +29,30 @@ public class HomeActivity extends AppCompatActivity {
     private LinearLayout cartBar;
     private TextView tvCartAction, tvCartTotal, tvEmptyProducts;
 
-    // Навигация
     private LinearLayout navHome, navCatalog, navProjects, navProfile;
 
     private enum FilterType { ALL, WOMEN, MEN }
     private FilterType currentFilter = FilterType.ALL;
     private String currentQuery = "";
 
+    private boolean isLoading = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        // Инициализация View
         initViews();
-
-        // Настройка RecyclerView
-        rvProducts.setLayoutManager(new LinearLayoutManager(this));
-
-        // Загрузка товаров
-        loadProducts();
-
-        // Настройка поиска
+        setupRecyclerView();
         setupSearch();
-
-        // Настройка фильтров
         setupFilters();
+        setupBottomNavigation();
 
-        // Корзина
         cartBar.setOnClickListener(v ->
                 startActivity(new Intent(HomeActivity.this, CartActivity.class)));
 
-        // Нижняя навигация
-        setupBottomNavigation();
+        // Загружаем товары с сервера
+        loadProductsFromServer();
     }
 
     private void initViews() {
@@ -74,11 +66,85 @@ public class HomeActivity extends AppCompatActivity {
         tvCartTotal = findViewById(R.id.homeTvCartTotal);
         tvEmptyProducts = findViewById(R.id.homeTvEmptyProducts);
 
-        // Навигация
         navHome = findViewById(R.id.navHome);
         navCatalog = findViewById(R.id.navCatalog);
         navProjects = findViewById(R.id.navProjects);
         navProfile = findViewById(R.id.navProfile);
+    }
+
+    private void setupRecyclerView() {
+        rvProducts.setLayoutManager(new LinearLayoutManager(this));
+        productList = new ArrayList<>();
+        filteredList = new ArrayList<>();
+        productAdapter = new ProductAdapter(filteredList, this);
+        rvProducts.setAdapter(productAdapter);
+    }
+
+    private void loadProductsFromServer() {
+        if (isLoading) return;
+        isLoading = true;
+
+        tvEmptyProducts.setText("Загрузка товаров...");
+        tvEmptyProducts.setVisibility(View.VISIBLE);
+        rvProducts.setVisibility(View.GONE);
+
+        ApiClient.getProducts(new ApiClient.ProductsCallback() {
+            @Override
+            public void onSuccess(List<Product> products) {
+                runOnUiThread(() -> {
+                    isLoading = false;
+                    productList.clear();
+                    productList.addAll(products);
+                    filteredList.clear();
+                    filteredList.addAll(products);
+                    productAdapter.notifyDataSetChanged();
+
+                    tvEmptyProducts.setVisibility(View.GONE);
+                    rvProducts.setVisibility(View.VISIBLE);
+                    applyFilters();
+                    updateCartBar();
+
+                    android.util.Log.d("HOME_DEBUG", "Загружено товаров: " + products.size());
+                });
+            }
+
+            @Override
+            public void onFailure(String error) {
+                runOnUiThread(() -> {
+                    isLoading = false;
+                    android.util.Log.e("HOME_DEBUG", "Ошибка загрузки: " + error);
+                    tvEmptyProducts.setText("Ошибка загрузки: " + error);
+
+                    // Пробуем загрузить локальные товары как резерв
+                    loadLocalProducts();
+                });
+            }
+        });
+    }
+
+    private void loadLocalProducts() {
+        productList.clear();
+        productList.add(new Product("Рубашка Воскресенье", "300 ₽", 0,
+                "Классическая рубашка из 100% хлопка."));
+        productList.add(new Product("Шорты Вторник", "4000 ₽", 0,
+                "Удобные летние шорты."));
+        productList.add(new Product("Футболка Пятница", "800 ₽", 0,
+                "Хлопковая футболка с принтом."));
+        productList.add(new Product("Джинсы Суббота", "2500 ₽", 0,
+                "Стильные джинсы прямого кроя."));
+        productList.add(new Product("Куртка Зима", "5000 ₽", 0,
+                "Теплая зимняя куртка."));
+
+        filteredList.clear();
+        filteredList.addAll(productList);
+        productAdapter.notifyDataSetChanged();
+
+        tvEmptyProducts.setVisibility(View.GONE);
+        rvProducts.setVisibility(View.VISIBLE);
+        applyFilters();
+        updateCartBar();
+
+        Toast.makeText(this, "Загружены локальные товары", Toast.LENGTH_SHORT).show();
     }
 
     private void setupSearch() {
@@ -114,55 +180,22 @@ public class HomeActivity extends AppCompatActivity {
     }
 
     private void setupBottomNavigation() {
-        // Главная (текущий экран)
-        navHome.setOnClickListener(v -> {
-            // Уже на главной
-        });
-
-        // Каталог
+        navHome.setOnClickListener(v -> {});
         navCatalog.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, CatalogActivity.class);
-            startActivity(intent);
+            startActivity(new Intent(HomeActivity.this, CatalogActivity.class));
             finish();
         });
-
-        // Проекты
         navProjects.setOnClickListener(v -> {
             try {
-                Intent intent = new Intent(HomeActivity.this, ProjectsActivity.class);
-                startActivity(intent);
+                startActivity(new Intent(HomeActivity.this, ProjectsActivity.class));
             } catch (Exception e) {
                 Toast.makeText(HomeActivity.this, "Ошибка: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
-
-        // Профиль
         navProfile.setOnClickListener(v -> {
-            Intent intent = new Intent(HomeActivity.this, MainActivity7.class);
-            startActivity(intent);
+            startActivity(new Intent(HomeActivity.this, MainActivity7.class));
             finish();
         });
-    }
-
-    private void loadProducts() {
-        productList = new ArrayList<>();
-        productList.add(new Product("Рубашка Воскресенье", "300 ₽", 0,
-                "Классическая рубашка из 100% хлопка. Отличный выбор для повседневной носки."));
-        productList.add(new Product("Шорты Вторник", "4000 ₽", 0,
-                "Удобные летние шорты из натуральной ткани."));
-        productList.add(new Product("Футболка Пятница", "800 ₽", 0,
-                "Хлопковая футболка с принтом. Мягкая и дышащая."));
-        productList.add(new Product("Джинсы Суббота", "2500 ₽", 0,
-                "Стильные джинсы прямого кроя."));
-        productList.add(new Product("Куртка Зима", "5000 ₽", 0,
-                "Теплая зимняя куртка."));
-
-        filteredList = new ArrayList<>(productList);
-        productAdapter = new ProductAdapter(filteredList, this);
-        rvProducts.setAdapter(productAdapter);
-
-        updateFilterButtons();
-        updateCartBar();
     }
 
     private void applyFilters() {
@@ -176,11 +209,12 @@ public class HomeActivity extends AppCompatActivity {
         }
 
         if (filteredList.isEmpty()) {
-            tvEmptyProducts.setVisibility(TextView.VISIBLE);
-            rvProducts.setVisibility(RecyclerView.GONE);
+            tvEmptyProducts.setVisibility(View.VISIBLE);
+            tvEmptyProducts.setText("Товары не найдены");
+            rvProducts.setVisibility(View.GONE);
         } else {
-            tvEmptyProducts.setVisibility(TextView.GONE);
-            rvProducts.setVisibility(RecyclerView.VISIBLE);
+            tvEmptyProducts.setVisibility(View.GONE);
+            rvProducts.setVisibility(View.VISIBLE);
         }
 
         productAdapter.notifyDataSetChanged();

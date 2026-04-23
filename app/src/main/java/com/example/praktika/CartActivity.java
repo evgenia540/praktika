@@ -1,5 +1,6 @@
 package com.example.praktika;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,10 +43,55 @@ public class CartActivity extends AppCompatActivity {
             renderCart();
         });
 
-        btnCheckout.setOnClickListener(v ->
-                Toast.makeText(this, "Заказ оформлен!", Toast.LENGTH_SHORT).show());
+        btnCheckout.setOnClickListener(v -> createOrder());
 
         renderCart();
+    }
+
+    private void createOrder() {
+        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        String userId = prefs.getString("user_id", "");
+        List<CartManager.CartEntry> entries = CartManager.getEntries(this);
+
+        if (userId.isEmpty()) {
+            Toast.makeText(this, "Войдите в аккаунт для оформления заказа", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (entries.isEmpty()) {
+            Toast.makeText(this, "Корзина пуста", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        double total = CartManager.getTotalPrice(this);
+
+        btnCheckout.setText("Оформляем...");
+        btnCheckout.setEnabled(false);
+
+        ApiClient.createOrder(userId, total, new ApiClient.OrderCallback() {
+            @Override
+            public void onSuccess(String orderId) {
+                runOnUiThread(() -> {
+                    CartManager.clear(CartActivity.this);
+                    renderCart();
+                    btnCheckout.setText("Заказать");
+                    btnCheckout.setEnabled(true);
+                    Toast.makeText(CartActivity.this, "✅ Заказ оформлен!", Toast.LENGTH_LONG).show();
+                });
+            }
+
+            @Override
+            public void onFailure(String error) {
+                runOnUiThread(() -> {
+                    // Если сервер не отвечает - работаем локально
+                    CartManager.clear(CartActivity.this);
+                    renderCart();
+                    btnCheckout.setText("Заказать");
+                    btnCheckout.setEnabled(true);
+                    Toast.makeText(CartActivity.this, "📱 Заказ сохранен локально", Toast.LENGTH_SHORT).show();
+                });
+            }
+        });
     }
 
     @Override

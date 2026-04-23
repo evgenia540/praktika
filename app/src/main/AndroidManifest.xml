@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
+    <!-- РАЗРЕШЕНИЯ ДЛЯ ИНТЕРНЕТА -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Praktika">
+        android:theme="@style/Theme.Praktika"
+        android:usesCleartextTraffic="true">
 
+        <!-- ЗАПУСКОВАЯ АКТИВНОСТЬ (СПЛЕШ-ЭКРАН) -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
@@ -18,39 +24,62 @@
             </intent-filter>
         </activity>
 
+        <!-- ЭКРАН ВХОДА -->
         <activity
             android:name=".MainActivity2"
             android:exported="false" />
+
+        <!-- ЭКРАН PIN-КОДА -->
         <activity
             android:name=".MainActivity3"
             android:exported="false" />
+
+        <!-- ЭКРАН РЕГИСТРАЦИИ (ПРОФИЛЬ) -->
         <activity
             android:name=".MainActivity4"
             android:exported="false" />
+
+        <!-- ЭКРАН СОЗДАНИЯ ПАРОЛЯ -->
         <activity
             android:name=".MainActivity5"
             android:exported="false" />
+
+        <!-- ЭКРАН УСТАНОВКИ PIN-КОДА -->
         <activity
             android:name=".MainActivity6"
             android:exported="false" />
+
+        <!-- ЭКРАН ПРОФИЛЯ ПОЛЬЗОВАТЕЛЯ -->
         <activity
             android:name=".MainActivity7"
             android:exported="false" />
+
+        <!-- ГЛАВНЫЙ ЭКРАН (HOME) -->
         <activity
             android:name=".HomeActivity"
             android:exported="false" />
+
+        <!-- ЭКРАН КАТАЛОГА -->
         <activity
             android:name=".CatalogActivity"
             android:exported="false" />
+
+        <!-- ЭКРАН КОРЗИНЫ -->
         <activity
             android:name=".CartActivity"
             android:exported="false" />
+
+        <!-- ЭКРАН ПРОЕКТОВ -->
         <activity
             android:name=".ProjectsActivity"
             android:exported="false" />
+
+        <!-- ЭКРАН СОЗДАНИЯ ПРОЕКТА -->
         <activity
             android:name=".CreateProjectActivity"
             android:exported="false" />
+
+        <!-- ЭКРАН ДЕТАЛЕЙ ТОВАРА -->
         <activity
             android:name=".ProductDetailActivity"
             android:exported="false" />
